@@ -5,6 +5,8 @@ describe("Generator函数", function () {
 	/**
 	 * 执行 Generator 函数会返回一个遍历器对象，也就是说，Generator 函数除了状态机，
 	 * 还是一个遍历器对象生成函数。返回的遍历器对象，可以依次遍历 Generator 函数内部的每一个状态。
+   *
+   * 调用next方法会运行到下一个yield表达式。
 	 */
 	it('基本操作', function () {
 		function* test() {
@@ -52,7 +54,7 @@ describe("Generator函数", function () {
 			console.log('Hello 1' + (yield)); // OK
 			console.log('Hello 2' + (yield 123)); // OK
 			let input = yield 23333; // OK
-			console.log('input', input)
+			console.log('input', input) // undefined
 			return
 		}
 		let i = demo();
@@ -63,6 +65,77 @@ describe("Generator函数", function () {
 		console.log(i.next());
 	});
 
+});
 
+describe('Generator 函数进阶套路', function () {
 
-})
+  it('Gnerator函数执行流程', function () {
+    function* f() {
+      console.log('generator:start');
+      let y1 = yield 'yield one';
+      console.log('y1:', y1)
+      let y2 = yield 'yield two';
+      console.log('y2:', y2)
+    }
+
+    let i = f();
+
+    console.log('------next:start-------')
+    console.log('next:1', i.next('param1'))
+    console.log('-------------')
+    // yield语句优先执行完
+    console.log('next:2', i.next())
+    console.log('-------------')
+    console.log('next:3', i.next('param3'))
+    console.log('-------END-------')
+
+  });
+
+  /**
+   * next方法返回的是 yield 后的表达式的值，next方法的参数是
+   * yield语句(下一个）的返回值，下轮语句就可以获取到这个值
+   */
+  it('next方法的参数', function () {
+    function* f() {
+      console.log('yield1', yield 1);
+      console.log('yield2', yield 2);
+      console.log('yield3', yield 3);
+    }
+
+    let i = f();
+    console.log('loading...')
+    console.log('next1: ', i.next()) // 第一个yield接不到
+    console.log('loading...')
+    console.log('next3: ', i.next())
+    console.log('next4: ', i.next())
+  });
+
+  it('should ', function () {
+    var gen = function* gen(){
+      try {
+        yield console.log('a');
+        console.log('/////')
+        yield console.log('b'); // 没有输出
+        console.log('/////')
+      } catch (e) {
+        console.log('/////')
+        console.log('error')
+        console.log('/////')
+      }
+      console.log('/////')
+      yield console.log('c');
+      console.log('/////')
+      yield console.log('d');
+    }
+
+    var g = gen();
+    console.log('-----')
+    g.next() // a
+    console.log('-----')
+    g.throw() // b
+    console.log('-----')
+    g.next() // c
+    console.log('-----')
+  });
+
+});
