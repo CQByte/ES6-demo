@@ -215,4 +215,3 @@ describe('Generator 函数进阶套路', function () {
   });
 
 });
-})
