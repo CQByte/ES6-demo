@@ -64,5 +64,81 @@ describe("Generator函数", function () {
 	});
 
 
+	it('Generator 函数嵌套', function () {
+		function* f() {
+			yield 'a'
+			yield 'b'
+		}
+
+		function* f1() {
+			yield 'c'
+			for(let i of f()){
+				console.log(i)
+			}
+			yield 'd'
+		}
+
+		for(let i of f1()){
+			console.log(i)
+		}
+	});
+
+	it('yield* 在Generator函数里遍历iterator', function () {
+		function* f() {
+			yield 'a'
+			yield 'b'
+		}
+
+		function* f1() {
+			yield 'c'
+			yield* f() // 同上例，等同于在Generator内部部署一个for...of循环，区别在于return
+			yield 'd'
+		}
+
+		for(let i of f1()){
+			console.log(i)
+		}
+	});
+
+	it('yield* 相关', function () {
+		function* f() {
+			yield* ['a', 'b']
+		}
+		console.log(...f())
+	});
+
+	it('作为对象属性', function () {
+		let obj = {
+			* MG(){
+				yield '666'
+			}
+		}
+		console.log(...obj.MG())
+	});
+
+	it('this', function () {
+		function* f() {
+			this.a = 'a'
+			yield 'a1'
+		}
+		f.prototype.b = 'b'
+		let i = f(); // i 是 f 的实例，继承f的原型。但是f()返回的是遍历器对象而不是this，所以i无法访问a
+
+		expect(i.b).to.be.equal(f.prototype.b)
+	});
+
+	it('函数访问原型上的属性', function () {
+		function f() {}
+		f.prototype.a = 'a'
+		console.log(f)
+		console.log(f.a)
+		console.log(f.prototype.a)
+
+		console.log(f.__proto__ == Function.prototype)
+		console.log(Function.prototype.__proto__ == Object.prototype)
+		console.log('原型链的终点', Object.prototype.__proto__)
+	});
+
+
 
 })
