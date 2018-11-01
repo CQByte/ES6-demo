@@ -61,9 +61,14 @@ describe("Symbol", function () {
 
 
 	it('Symbol 也有包装对象', function () {
-		let s = Symbol('foo')
+		let s = Symbol.for('foo')
+		console.log(s)
+        console.log(Symbol.keyFor(s))
+
 		let so = Object(s)
 		expect(typeof so).to.be.equal('object')
-		expect(so.primaryKey)
+        console.log(so.toString())
+        // 报错
+        console.log(Symbol.keyFor(so))
 	});
 })
